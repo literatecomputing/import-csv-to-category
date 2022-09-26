@@ -1,0 +1,28 @@
+#!/usr/bin/env  bash
+#-*- mode: sh;  -*-
+# Add /data to volumes in app.yml like this:
+#  - volume:
+#      host: /data
+#      guest: /data
+# You should be able to put it anywhere that you can access from inside the container
+# then run this file from inside the container like this:
+# cd /var/discourse
+# ./launcher enter app
+# /data/import-csv-to-category/import
+
+SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+SCRIPT=custom-csv.rb
+echo "SOURCE $SOURCE_DIR"
+
+cd /var/www/discourse
+export CSV_FILE_PATH="/data/nathan-csv-import/topics.csv"
+export TARGET_CATEGORY='General'
+
+DATE=$(date +"%Y-%m-%d-%H%M")
+echo "Start time: $DATE"
+
+time bundle exec ruby script/import_scripts/$SCRIPT $SOURCE_DIR
+ENDDATE=$(date +"%Y-%m-%d-%H%M")
+echo "End time: $ENDDATE"
+
+exit
